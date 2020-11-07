@@ -1,31 +1,46 @@
-# Google Cloud Print service for Laravel 5
+# Google Cloud Print service for Laravel
 
 ## Install
 
 Via composer :
+```bash
+composer require bnbwebexpertise/laravel-google-cloud-print
+```
 
-    composer require bnbwebexpertise/laravel-google-cloud-print
+The package will automatically register. If you prefer to register package manually, add to your 'config\app.php'
 
-Then add the service provider class to your Laravel `config/app.php` :
-
+```php
     'providers' => [
         // ...
         Bnb\GoogleCloudPrint\LaravelServiceProvider::class,
         // ...
     ],
-
+```
 Also add the Facade alias if you intend to use it :
-
+```
     'aliases' => [
         // ...
         'GoogleCloudPrint' => Bnb\GoogleCloudPrint\Facades\GoogleCloudPrint::class,
         // ...
     ],
-
+```
 ## Configuration
 
-Set the env parameter `GCP_CREDENTIALS_PATH` to the absolute path
- (or relative to the laravel application root) of the servie account
+To publish configuration:
+
+```bash
+php artisan vendor:publish --provider="Bnb\GoogleCloudPrint\LaravelServiceProvider" --tag=config
+```
+
+this will publish the following config file:
+
+```php
+return [
+    'credentials' => env('GCP_CREDENTIALS_PATH'),
+];
+```
+Set the `.env` parameter `GCP_CREDENTIALS_PATH` to the absolute path
+ (or relative to the laravel application root) of the service account
  JSON file downloaded from Google Console.
 
 ### Google service setup
@@ -51,6 +66,9 @@ Either use the Facade or the shortcut with one of the three provided
  content type to get a print task object :
 
 ```
+
+use GoogleCloudPrint;
+
 $task = GoogleCloudPrint::asText()
 $task = GoogleCloudPrint::asHtml()
 $task = GoogleCloudPrint::asPdf()
@@ -85,6 +103,8 @@ If the job is rejected an exception is thrown.
 #### Examples
 
 ```
+use GoogleCloudPrint;
+
 $printerId = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx';
 
 // Printing HTML from an URL

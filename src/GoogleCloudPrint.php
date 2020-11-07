@@ -1,4 +1,5 @@
 <?php
+
 namespace Bnb\GoogleCloudPrint;
 
 use Bnb\GoogleCloudPrint\Exceptions\InvalidCredentialsException;
