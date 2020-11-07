@@ -1,4 +1,5 @@
 <?php
+
 namespace Bnb\GoogleCloudPrint;
 
 use Bnb\GoogleCloudPrint\Exceptions\InvalidSourceException;
@@ -6,7 +7,6 @@ use Bnb\GoogleCloudPrint\Exceptions\PrintTaskFailedException;
 
 class PrintTask
 {
-
     protected $accessToken;
 
     protected $printer;
@@ -23,7 +23,6 @@ class PrintTask
 
     private $tryProcessInvite = true;
 
-
     /**
      * PrintTask constructor.
      *
@@ -35,7 +34,6 @@ class PrintTask
         $this->accessToken = $accessToken;
         $this->contentType = $contentType;
     }
-
 
     /**
      * @param string $raw The raw content to print
@@ -49,16 +47,16 @@ class PrintTask
         return $this;
     }
 
-
     /**
      * @param string $file An accessible file path
      *
-     * @return PrintTask
      * @throws InvalidSourceException
+     *
+     * @return PrintTask
      */
     public function file($file)
     {
-        if ( ! file_exists($file)) {
+        if (!file_exists($file)) {
             throw new InvalidSourceException();
         }
 
@@ -67,16 +65,16 @@ class PrintTask
         return $this;
     }
 
-
     /**
      * @param string $url An absolute public URL (prefixed by http or https)
      *
-     * @return self
      * @throws InvalidSourceException
+     *
+     * @return self
      */
     public function url($url)
     {
-        if ( ! preg_match('/^https?:\/\//', $url)) {
+        if (!preg_match('/^https?:\/\//', $url)) {
             throw new InvalidSourceException();
         }
 
@@ -84,7 +82,6 @@ class PrintTask
 
         return $this;
     }
-
 
     /**
      * @param string $title The task title
@@ -98,7 +95,6 @@ class PrintTask
         return $this;
     }
 
-
     /**
      * @param string $printer The printer ID
      *
@@ -110,7 +106,6 @@ class PrintTask
 
         return $this;
     }
-
 
     /**
      * @param array|string|string... $tags
@@ -132,7 +127,6 @@ class PrintTask
         return $this;
     }
 
-
     /**
      * @param int $start
      * @param int $end
@@ -151,17 +145,16 @@ class PrintTask
             'interval' => [
                 [
                     'start' => $start,
-                    'end' => $end
-                ]
-            ]
+                    'end'   => $end,
+                ],
+            ],
         ]);
 
         return $this;
     }
 
-
     /**
-     * Sets the margins in millimeters
+     * Sets the margins in millimeters.
      *
      * @param int $top
      * @param int $right
@@ -173,18 +166,17 @@ class PrintTask
     public function marginsInMillimeters($top, $right, $bottom, $left)
     {
         $this->ticket('margins', [
-            'top_microns' => $top * 1000,
-            'right_microns' => $right * 1000,
+            'top_microns'    => $top * 1000,
+            'right_microns'  => $right * 1000,
             'bottom_microns' => $bottom * 1000,
-            'left_microns' => $left * 1000,
+            'left_microns'   => $left * 1000,
         ]);
 
         return $this;
     }
 
-
     /**
-     * Sets the margins in centimeters
+     * Sets the margins in centimeters.
      *
      * @param int $top
      * @param int $right
@@ -197,7 +189,6 @@ class PrintTask
     {
         return $this->marginsInMillimeters($top * 10, $right * 10, $bottom * 10, $left * 10);
     }
-
 
     /**
      * @param string $key
@@ -212,33 +203,31 @@ class PrintTask
         return $this;
     }
 
-
     /**
-     * @return PrintJob
-     *
      * @throws PrintTaskFailedException
+     *
+     * @return PrintJob
      */
     public function send()
     {
         $ticket = [
-            'version' => '1.0'
+            'version' => '1.0',
         ];
 
-        if ( ! empty($this->printOptions)) {
+        if (!empty($this->printOptions)) {
             $ticket['print'] = $this->printOptions;
         }
 
         $job = PrintApi::submit($this->accessToken, $this->printer, [
-            'title' => $this->title,
+            'title'                   => $this->title,
             'contentTransferEncoding' => 'base64',
-            'content' => base64_encode($this->source),
-            'contentType' => $this->contentType,
-            'tag' => join(',', $this->tags),
-            'ticket' => json_encode($ticket)
+            'content'                 => base64_encode($this->source),
+            'contentType'             => $this->contentType,
+            'tag'                     => join(',', $this->tags),
+            'ticket'                  => json_encode($ticket),
         ]);
 
         if ($job && ($job = json_decode($job))) {
-
             if ($job->success) {
                 return new PrintJob($job->job);
             }

@@ -8,7 +8,6 @@ use Illuminate\Contracts\Config\Repository as Config;
 
 class GoogleCloudPrint
 {
-
     /**
      * @var Config
      */
@@ -24,30 +23,27 @@ class GoogleCloudPrint
      */
     protected $credentialsPath;
 
-
     public function __construct(Config $config)
     {
         $this->config = $config;
     }
-
 
     protected function setUpClient()
     {
         if ($this->client === null) {
             $credentialsPath = $this->credentialsPath ?: $this->config->get('gcp.credentials');
 
-            if ( ! preg_match('/^\//', $credentialsPath)) {
+            if (!preg_match('/^\//', $credentialsPath)) {
                 $credentialsPath = base_path($credentialsPath);
             }
 
-            putenv('GOOGLE_APPLICATION_CREDENTIALS=' . $credentialsPath);
+            putenv('GOOGLE_APPLICATION_CREDENTIALS='.$credentialsPath);
 
             $this->client = new Google_Client();
             $this->client->useApplicationDefaultCredentials();
             $this->client->addScope(['https://www.googleapis.com/auth/cloudprint']);
         }
     }
-
 
     protected function requireToken()
     {
@@ -57,20 +53,18 @@ class GoogleCloudPrint
             $this->client->refreshTokenWithAssertion();
         }
 
-        if ( ! ($accessToken = $this->client->getAccessToken())) {
+        if (!($accessToken = $this->client->getAccessToken())) {
             throw new InvalidCredentialsException();
         }
 
         return $accessToken;
     }
 
-
     public function setCredentialsPath($credentialsPath)
     {
         $this->client = null;
         $this->credentialsPath = $credentialsPath;
     }
-
 
     public function getAccessToken()
     {
@@ -79,18 +73,15 @@ class GoogleCloudPrint
         return $accessToken['access_token'];
     }
 
-
     public function asText()
     {
         return new PrintTask($this->getAccessToken(), 'text/plain');
     }
 
-
     public function asHtml()
     {
         return new PrintTask($this->getAccessToken(), 'text/html');
     }
-
 
     public function asPdf()
     {

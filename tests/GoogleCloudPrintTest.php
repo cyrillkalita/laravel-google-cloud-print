@@ -1,17 +1,15 @@
 <?php
+
 use Bnb\GoogleCloudPrint\GoogleCloudPrint;
 
 class GoogleCloudPrintTest extends PHPUnit_Framework_TestCase
 {
-
     protected $configMock;
-
 
     public function setUp()
     {
         $this->configMock = Mockery::mock('Illuminate\Contracts\Config\Repository')->shouldDeferMissing();
     }
-
 
     /**
      * @return GoogleCloudPrint
@@ -21,17 +19,15 @@ class GoogleCloudPrintTest extends PHPUnit_Framework_TestCase
         $this->configMock->shouldReceive('get')
             ->with('credentials')
             ->once()
-            ->andReturn(__DIR__ . '/' . getenv('GCP_TEST_CREDENTIALS'));
+            ->andReturn(__DIR__.'/'.getenv('GCP_TEST_CREDENTIALS'));
 
         return new GoogleCloudPrint($this->configMock);
     }
-
 
     private function getPrinterId()
     {
         return $printerId = getenv('GCP_TEST_PRINTER_ID');
     }
-
 
     /** @test */
     public function it_authenticates()
@@ -41,7 +37,6 @@ class GoogleCloudPrintTest extends PHPUnit_Framework_TestCase
         $this->assertNotEmpty($gcp->getAccessToken());
     }
 
-
     /** @test */
     public function it_prints_text()
     {
@@ -50,7 +45,8 @@ class GoogleCloudPrintTest extends PHPUnit_Framework_TestCase
 
         $printJob = $gcp
             ->asText()
-            ->content(<<<TEXT
+            ->content(
+                <<<TEXT
                       ____
                  ____ \__ \
                  \__ \__/ / __
@@ -86,7 +82,6 @@ TEXT
         $this->assertEquals('IN_PROGRESS', $printJob->status);
     }
 
-
     /** @test */
     public function it_prints_pdf_from_file()
     {
@@ -95,14 +90,13 @@ TEXT
 
         $printJob = $gcp
             ->asPdf()
-            ->file(__DIR__ . '/test.pdf')
+            ->file(__DIR__.'/test.pdf')
             ->printer($printer)
             ->send();
 
         $this->assertNotNull($printJob);
         $this->assertEquals('IN_PROGRESS', $printJob->status);
     }
-
 
     /** @test */
     public function it_prints_html_from_url_with_range()
@@ -121,5 +115,4 @@ TEXT
         $this->assertNotNull($printJob);
         $this->assertEquals('IN_PROGRESS', $printJob->status);
     }
-
 }

@@ -1,18 +1,17 @@
 <?php
+
 namespace Bnb\GoogleCloudPrint;
 
 use Illuminate\Support\ServiceProvider;
 
 class LaravelServiceProvider extends ServiceProvider
 {
-
     /**
      * Indicates if loading of the provider is deferred.
      *
      * @var bool
      */
     protected $defer = true;
-
 
     /**
      * Register the service provider.
@@ -21,13 +20,12 @@ class LaravelServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/config/config.php', 'gcp');
+        $this->mergeConfigFrom(__DIR__.'/config/config.php', 'gcp');
 
         $this->app->singleton('google.print', function ($app) {
             return new GoogleCloudPrint($app['config']);
         });
     }
-
 
     /**
      * Boot the service provider.
@@ -43,10 +41,9 @@ class LaravelServiceProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__ . '/config/config.php' => $publishPath
+            __DIR__.'/config/config.php' => $publishPath,
         ], 'config');
     }
-
 
     /**
      * Get the services provided by the provider.

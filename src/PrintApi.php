@@ -1,6 +1,6 @@
 <?php
 /**
- * laravel-google-cloud-print
+ * laravel-google-cloud-print.
  *
  * @author    Jérémy GAULIN <jeremy@bnb.re>
  * @copyright 2016 - B&B Web Expertise
@@ -10,7 +10,6 @@ namespace Bnb\GoogleCloudPrint;
 
 class PrintApi
 {
-
     const URL_SEARCH = 'https://www.google.com/cloudprint/search';
     const URL_SUBMIT = 'https://www.google.com/cloudprint/submit';
     const URL_DELETE_JOB = 'https://www.google.com/cloudprint/deletejob';
@@ -20,12 +19,9 @@ class PrintApi
 
     protected $accessToken;
 
-
     private function __construct()
     {
-
     }
-
 
     /**
      * @param string $accessToken OAuth2 offline access token
@@ -37,17 +33,16 @@ class PrintApi
      */
     public static function processInvite($accessToken, $printer)
     {
-        $api = new self;
+        $api = new self();
         $api->accessToken = $accessToken;
 
         $options = [
             'printerid' => $printer,
-            'accept' => 'true',
+            'accept'    => 'true',
         ];
 
         return $api->makeHttpCall(self::URL_PROCESS_INVITE, $options);
     }
-
 
     /**
      * @param string $accessToken OAuth2 offline access token
@@ -59,21 +54,20 @@ class PrintApi
      */
     public static function submit($accessToken, $printer, $options, $headers = [])
     {
-        $api = new self;
+        $api = new self();
         $api->accessToken = $accessToken;
 
         $options['printerid'] = $printer;
 
         if (empty($options['title'])) {
-            $options['title'] = 'job-' . date('YmdHis') . '-' . rand(1000, 9999);
+            $options['title'] = 'job-'.date('YmdHis').'-'.rand(1000, 9999);
         }
 
         return $api->makeHttpCall(self::URL_SUBMIT, $options, $headers);
     }
 
-
     /**
-     * Makes http calls to Google Cloud Print using curl
+     * Makes http calls to Google Cloud Print using curl.
      *
      * @param string $url        Http url to hit
      * @param array  $postFields Array of post fields to be posted
@@ -84,12 +78,12 @@ class PrintApi
     private function makeHttpCall($url, $postFields = [], $headers = [])
     {
         $headers = array_merge($headers, [
-            "Authorization: Bearer " . $this->accessToken
+            'Authorization: Bearer '.$this->accessToken,
         ]);
 
         $curl = curl_init($url);
 
-        if ( ! empty($postFields)) {
+        if (!empty($postFields)) {
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $postFields);
         }
